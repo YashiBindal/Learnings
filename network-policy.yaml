@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: DB-policy
+spec:
+  podSelector:
+    matchLabels:
+      role: db 
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+    - from:
+    # since pod and namespace selector are mention under single array, both these fields are required to meet the criteria. Can separate namespace rule by adding dash in front of it
+      - podSelector: 
+          matchLabels:
+            name: api-pod
+        namespaceSelector:
+          matchLabels:
+            name: prod
+      #whereas ipBlock is mention as a separate array, so it is treated as an OR, i.e either above 2 condition matches or ipBlock matches
+      - ipBlock:
+          cidr: 192.168.5.10/32
+      ports:
+        - protocol: TCP
+          port: 3306
+  #to send backup to  say a different server outside cluster
+  egress:
+    - to:
+      - ipBlock:
+          cidr: 192.168.5.10/32
+      ports:
+        - protocol: TCP
+          port: 80
+    
