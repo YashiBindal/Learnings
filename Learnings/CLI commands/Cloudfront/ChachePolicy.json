@@ -1,0 +1,24 @@
+{
+  "Comment": "Chache Policy to allow AUthorization Header",
+  "Name": "chache-policy-for-api-app-prod-origin",
+  "DefaultTTL": 10,
+  "MaxTTL": 60,
+  "MinTTL": 1,
+  "ParametersInCacheKeyAndForwardedToOrigin": {
+    "EnableAcceptEncodingGzip": true,
+    "EnableAcceptEncodingBrotli": true,
+    "HeadersConfig": {
+      "HeaderBehavior": "whitelist",
+      "Headers": {
+        "Quantity": 3,
+        "Items": ["Authorization", "jtoken", "jToken"]
+      }
+    },
+    "CookiesConfig": {
+      "CookieBehavior": "none"
+    },
+    "QueryStringsConfig": {
+      "QueryStringBehavior": "none"
+    }
+  }
+}

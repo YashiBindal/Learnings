@@ -1,0 +1,228 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: AWS API Gateway with a Lambda Integration
+Parameters:
+  ApiGatewayRestApi:
+    Type: String
+    Default: app-prod
+  ApiGatewayRestApiId:
+    Type: String
+    Default: eu0egfdef3
+  ApiGatewayRestApiParentId:
+    Type: String
+    Default: isybrm43vjh
+  ApiPath:
+    Type: String
+    Default: sample-api
+  ApiAuthorizerId:
+    Type: String
+    Default: ffdjtd
+  ApiGatewayStageName:
+    Type: String
+    Default: alpha
+  ApiGatewayHTTPMethod:
+    Type: String
+    Default: POST
+  LambdaFunctionName:
+    Type: String
+    Default: Lambda_function_name
+  LambdaArn:
+    Type: String
+    #get lambda Arn after deployment
+    Default: arn:aws:lambda:ap-south-1:373762821232:function:Lambda_function_name
+  AwsRegion:
+    Type: String
+    Default: ap-south-1
+
+Resources:
+  ApiGatewayResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref ApiGatewayRestApiParentId
+      PathPart: !Ref ApiPath
+      RestApiId: !Ref ApiGatewayRestApiId
+
+  ApiGatewayIamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: ""
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "apigateway.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      Policies:
+        - PolicyName: LambdaAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action: "lambda:InvokeFunction"
+                Resource: !Ref LambdaArn
+
+  OptionsMethod:
+  Type: AWS::ApiGateway::Method
+  Properties:
+    AuthorizationType: NONE
+    RestApiId: !Ref ApiGatewayRestApiId
+    ResourceId: !Ref ApiGatewayResource
+    HttpMethod: OPTIONS
+    Integration:
+      IntegrationResponses:
+      - StatusCode: 200
+        ResponseParameters:
+          method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,jtoken,jToken'"
+          method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+          method.response.header.Access-Control-Allow-Origin: "'*'"
+        ResponseTemplates:
+          application/json: ''
+      PassthroughBehavior: WHEN_NO_MATCH
+      RequestTemplates:
+        application/json: '{"statusCode": 200}'
+      Type: MOCK
+    MethodResponses:
+    - StatusCode: 200
+      ResponseModels:
+        application/json: 'Empty'
+      ResponseParameters:
+          method.response.header.Access-Control-Allow-Headers: true
+          method.response.header.Access-Control-Allow-Methods: true
+          method.response.header.Access-Control-Allow-Origin: true
+
+  PostMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      OperationName: "lambda"
+      ResourceId: !Ref ApiGatewayResource
+      RestApiId: !Ref ApiGatewayRestApiId
+      ApiKeyRequired: false
+      AuthorizationType: "CUSTOM"
+      AuthorizerId: !Ref ApiAuthorizerId
+      RequestParameters: 
+        method.request.header.jToken: true
+      RequestValidatorId: !Ref ApiGatewayRequestValidator
+      RequestModels: 
+        "application/json": !Ref ApiGatewayModel
+      HttpMethod: POST
+      Integration:
+        Credentials: !GetAtt ApiGatewayIamRole.Arn
+        IntegrationHttpMethod: POST
+        PassthroughBehavior: WHEN_NO_TEMPLATES
+        TimeoutInMillis: 29000
+        Type: AWS
+        Uri: "arn:aws:apigateway:ap-south-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-south-1:373762821232:function:Lambda_function_name/invocations"
+        ##use only when you need to allow request passthrough
+        RequestTemplates: 
+          "application/json": "{
+              \"body-json\" : $input.json('$'),
+              \"params\": {
+                \"header\": {
+                    #foreach($header in $input.params().header.keySet())
+                    \"$header\": \"$util.escapeJavaScript($input.params().header.get($header))\" #if($foreach.hasNext),#end
+                    #end
+                  }
+              }
+          }"
+        IntegrationResponses:
+        - StatusCode: '200'
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,jtoken,jToken'"
+            method.response.header.Access-Control-Allow-Methods: "'POST'"
+            method.response.header.Access-Control-Allow-Origin: "'*'"
+            method.response.header.Content-Security-Policy: "'default-src 'self' *.hdfclife.com;img-src 'self' blob: https: data:; script-src 'self' *.hdfclife.com; style-src 'self' *.googleapis.com; font-src 'self' 'unsafe-inline' data: fonts.gstatic.com; connect-src blob: gap: 'self' blob: data: * 'self' 'unsafe-inline' 'unsafe-eval' content'"
+            method.response.header.Strict-Transport-Security: "'max-age=31536000; includeSubDomains; preload'"
+            method.response.header.X-Content-Type-Options: "'nosniff'"
+            method.response.header.X-Frame-Options: "'SAMEORIGIN'"
+            method.response.header.X-XSS-Protection: "'1; mode=block'"
+      MethodResponses:
+      - StatusCode: '200'
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+          method.response.header.Access-Control-Allow-Headers: true
+          method.response.header.Access-Control-Allow-Methods: true
+          method.response.header.Access-Control-Allow-Origin: true
+          method.response.header.Content-Security-Policy: true
+          method.response.header.Strict-Transport-Security: true
+          method.response.header.X-Content-Type-Options: true
+          method.response.header.X-Frame-Options: true
+          method.response.header.X-XSS-Protection: true
+      
+  #use only if you define a custom model
+  ApiGatewayModel:
+    Type: AWS::ApiGateway::Model
+    Properties:
+      ContentType: application/json
+      Name: InstaAapiBodyValidator
+      RestApiId: !Ref ApiGatewayRestApiId
+      Schema: 
+        $schema: "http://json-schema.org/draft-04/schema#"
+        title: InstaAapiBodyValidator
+        type: object
+        properties: 
+          UserId:
+            type: string
+            pattern: ^[0-9]+$
+          FromDate: 
+            type: string
+            pattern: ^[0-9]+$
+          ToDate: 
+            type: string
+            pattern: ^[0-9]+$
+          AgentCode:
+            type: string
+            pattern: ^[0-9]+$
+        required:
+          - AgentCode
+          - FromDate
+          - ToDate
+
+  ApiGatewayRequestValidator:
+    Type: AWS::ApiGateway::RequestValidator
+    Properties:
+      RestApiId: !Ref ApiGatewayRestApiId
+      ValidateRequestBody: true
+   
+
+  ApiGatewayDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - PostMethod
+      - OptionsMethod
+    Properties:
+      Description: Lambda API Deployment
+      RestApiId: !Ref ApiGatewayRestApiId
+      StageName: !Ref ApiGatewayStageName
+      
+  #use only if you define a custom model
+  # ApiGatewayModel:
+  #   Type: AWS::ApiGateway::Model
+  #   Properties:
+  #     ContentType: "application/json"
+  #     RestApiId: !Ref ApiGatewayRestApiId
+  #     Schema: {}
+  # ApiGatewayResponse:
+  #   Type: AWS::ApiGateway::GatewayResponse
+  #   Properties:
+  #     ResponseParameters:
+  #       gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+  #       gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,jtoken,jToken'"
+  #     ResponseTemplates:
+  #         application/json: "Empty"
+  #     ResponseType: BAD_REQUEST_BODY
+  #     RestApiId: !Ref ApiGatewayRestApiId
+  #     StatusCode: '400'
+
+  # ApiGatewayStage:
+  #   Type: AWS::ApiGateway::Stage
+  #   Properties:
+  #     DeploymentId: !Ref ApiGatewayDeployment
+  #     Description: Lambda API Stage alpha
+  #     RestApiId: !Ref ApiGatewayRestApiId
+  #     StageName: !Ref ApiGatewayStageName
+
+

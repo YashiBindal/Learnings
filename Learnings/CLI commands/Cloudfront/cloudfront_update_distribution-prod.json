@@ -1,0 +1,202 @@
+{
+  "CallerReference": "64d07dab-7321-46dc-a746-00e409a5215f",
+  "Aliases": {
+    "Quantity": 1,
+    "Items": ["app.sampleapp.com"]
+  },
+  "DefaultRootObject": "index.html",
+  "Origins": {
+    "Quantity": 2,
+    "Items": [
+      {
+        "Id": "s3-origin-app.sampleapp.com",
+        "DomainName": "app.sampleapp.com.s3.amazonaws.com",
+        "OriginPath": "",
+        "CustomHeaders": {
+          "Quantity": 0
+        },
+        "S3OriginConfig": {
+          "OriginAccessIdentity": "origin-access-identity/cloudfront/GEIURSE45BKHO8"
+        },
+        "ConnectionAttempts": 3,
+        "ConnectionTimeout": 10,
+        "OriginShield": {
+          "Enabled": false
+        }
+      },
+      {
+        "Id": "api-instago-app-prod-origin",
+        "DomainName": "dshgfrwyi45.execute-api.ap-south-1.amazonaws.com",
+        "OriginPath": "",
+        "CustomHeaders": {
+          "Quantity": 0
+        },
+        "CustomOriginConfig": {
+          "HTTPPort": 80,
+          "HTTPSPort": 443,
+          "OriginProtocolPolicy": "https-only",
+          "OriginSslProtocols": {
+            "Quantity": 1,
+            "Items": ["TLSv1.2"]
+          },
+          "OriginReadTimeout": 30,
+          "OriginKeepaliveTimeout": 29
+        },
+        "ConnectionAttempts": 3,
+        "ConnectionTimeout": 10,
+        "OriginShield": {
+          "Enabled": false
+        }
+      }
+    ]
+  },
+  "OriginGroups": {
+    "Quantity": 0
+  },
+  "DefaultCacheBehavior": {
+    "TargetOriginId": "s3-origin-app.sampleapp.com",
+    "TrustedSigners": {
+      "Enabled": false,
+      "Quantity": 0
+    },
+    "TrustedKeyGroups": {
+      "Enabled": false,
+      "Quantity": 0
+    },
+    "ViewerProtocolPolicy": "redirect-to-https",
+    "AllowedMethods": {
+      "Quantity": 3,
+      "Items": ["HEAD", "GET", "OPTIONS"],
+      "CachedMethods": {
+        "Quantity": 3,
+        "Items": ["HEAD", "GET", "OPTIONS"]
+      }
+    },
+    "SmoothStreaming": false,
+    "Compress": true,
+    "LambdaFunctionAssociations": {
+      "Quantity": 0
+    },
+    "FunctionAssociations": {
+      "Quantity": 0
+    },
+    "CachePolicyId": "f9c6b8cf-6556-4521-acc2-8dcbe423c491",
+    "ResponseHeadersPolicyId": "0cfce880-5ead-423c-8f71-44e7177623db",
+    "OriginRequestPolicyId": "4c84541e-0e44-4220-8e9f-cce3dc2f2ac6",
+    "FieldLevelEncryptionId": ""
+  },
+  "CacheBehaviors": {
+    "Quantity": 2,
+    "Items": [
+      {
+        "PathPattern": "/alpha/*",
+        "TargetOriginId": "api-instago-app-prod-origin",
+        "TrustedSigners": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "TrustedKeyGroups": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "ViewerProtocolPolicy": "redirect-to-https",
+        "AllowedMethods": {
+          "Quantity": 7,
+          "Items": ["HEAD", "GET", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"],
+          "CachedMethods": {
+            "Quantity": 2,
+            "Items": ["HEAD", "GET"]
+          }
+        },
+        "FieldLevelEncryptionId": "",
+        "SmoothStreaming": false,
+        "Compress": true,
+        "LambdaFunctionAssociations": {
+          "Quantity": 0
+        },
+        "FunctionAssociations": {
+          "Quantity": 0
+        },
+        "CachePolicyId": "f9c6b8cf-6556-4521-acc2-8dcbe423c491",
+        "ResponseHeadersPolicyId": "0cfce880-5ead-423c-8f71-44e7177623db",
+        "OriginRequestPolicyId": "4c84541e-0e44-4220-8e9f-cce3dc2f2ac6"
+      },
+      {
+        "PathPattern": "/",
+        "TargetOriginId": "s3-origin-app.sampleapp.com",
+        "TrustedSigners": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "TrustedKeyGroups": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "ViewerProtocolPolicy": "https-only",
+        "AllowedMethods": {
+          "Quantity": 3,
+          "Items": ["HEAD", "GET", "OPTIONS"],
+          "CachedMethods": {
+            "Quantity": 3,
+            "Items": ["HEAD", "GET", "OPTIONS"]
+          }
+        },
+        "SmoothStreaming": false,
+        "Compress": true,
+        "LambdaFunctionAssociations": {
+          "Quantity": 0
+        },
+        "FunctionAssociations": {
+          "Quantity": 0
+        },
+        "CachePolicyId": "f9c6b8cf-6556-4521-acc2-8dcbe423c491",
+        "ResponseHeadersPolicyId": "0cfce880-5ead-423c-8f71-44e7177623db",
+        "OriginRequestPolicyId": "4c84541e-0e44-4220-8e9f-cce3dc2f2ac6",
+        "FieldLevelEncryptionId": ""
+      }
+    ]
+  },
+  "CustomErrorResponses": {
+    "Quantity": 2,
+    "Items": [
+      {
+        "ErrorCode": 403,
+        "ResponsePagePath": "/index.html",
+        "ResponseCode": "200",
+        "ErrorCachingMinTTL": 300
+      },
+      {
+        "ErrorCode": 404,
+        "ResponsePagePath": "/index.html",
+        "ResponseCode": "200",
+        "ErrorCachingMinTTL": 300
+      }
+    ]
+  },
+  "Comment": "app.sampleapp.com cloudfront distribution with an S3 origin and an API gateway origin",
+  "Logging": {
+    "Enabled": false,
+    "IncludeCookies": false,
+    "Bucket": "",
+    "Prefix": ""
+  },
+  "PriceClass": "PriceClass_All",
+  "Enabled": true,
+  "ViewerCertificate": {
+    "CloudFrontDefaultCertificate": false,
+    "ACMCertificateArn": "arn:aws:acm:us-east-1:868657456345:certificate/e25g778df-56na-47t3-83b3-7c275aad4e72",
+    "SSLSupportMethod": "sni-only",
+    "MinimumProtocolVersion": "TLSv1.2_2021",
+    "Certificate": "arn:aws:acm:us-east-1:868657456345:certificate/e25g778df-56na-47t3-83b3-7c275aad4e72",
+    "CertificateSource": "acm"
+  },
+  "Restrictions": {
+    "GeoRestriction": {
+      "RestrictionType": "none",
+      "Quantity": 0
+    }
+  },
+  "WebACLId": "",
+  "HttpVersion": "http2",
+  "IsIPV6Enabled": false
+}

@@ -1,0 +1,48 @@
+{
+  "Comment": "Policy for api origin- Allows all origins for CORS requests, including preflight requests, and adds security headers ",
+  "Name": "header-response-for-api-app-prod-origin",
+  "CorsConfig": {
+    "AccessControlAllowOrigins": {
+      "Quantity": 1,
+      "Items": ["*"]
+    },
+    "AccessControlAllowHeaders": {
+      "Quantity": 4,
+      "Items": ["Content-Type", "Authorization", "jtoken", "jToken"]
+    },
+    "AccessControlAllowMethods": {
+      "Quantity": 3,
+      "Items": ["GET", "POST", "PUT"]
+    },
+    "AccessControlAllowCredentials": false,
+    "OriginOverride": false
+  },
+  "SecurityHeadersConfig": {
+    "XSSProtection": {
+      "Override": true,
+      "Protection": true,
+      "ModeBlock": true
+    },
+    "FrameOptions": {
+      "Override": true,
+      "FrameOption": "SAMEORIGIN"
+    },
+    "ReferrerPolicy": {
+      "Override": true,
+      "ReferrerPolicy": "no-referrer"
+    },
+    "ContentSecurityPolicy": {
+      "Override": true,
+      "ContentSecurityPolicy": "frame-ancestors 'self'; default-src 'self' ; img-src 'self'  blob: https: data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' 'unsafe-hashes' *.cloudflareinsights.com *.saleassist.ai *.jsdelivr.net html2canvas.hertzen.com unpkg.com *.gstatic.com; style-src 'self' 'unsafe-inline' *.googleapis.com html2canvas.hertzen.com unpkg.com *.gstatic.com; font-src 'self'  'unsafe-inline' 'unsafe-hashes' data: fonts.gstatic.com; connect-src  blob: gap: 'self' blob: data: * 'self' 'unsafe-inline' 'unsafe-hashes' 'unsafe-eval' content"
+    },
+    "ContentTypeOptions": {
+      "Override": true
+    },
+    "StrictTransportSecurity": {
+      "Override": true,
+      "IncludeSubdomains": true,
+      "Preload": true,
+      "AccessControlMaxAgeSec": 31536000
+    }
+  }
+}

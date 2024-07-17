@@ -1,0 +1,23 @@
+
+Commands to create Options Method:
+
+
+aws apigateway put-method --rest-api-id sdfuy44rbewu \
+--resource-id sbdji34b \
+--http-method OPTIONS \
+--authorization-type "NONE" \
+--region ap-south-1
+
+aws apigateway put-integration --rest-api-id sdfuy44rbewu \
+--resource-id sbdji34b --http-method OPTIONS \
+--type MOCK --integration-http-method OPTIONS \
+--timeout-in-millis 29000 \
+--region ap-south-1 \
+--request-templates '{ "application/json": "{\"statusCode\": 200}" }'
+
+aws apigateway put-method-response --rest-api-id sdfuy44rbewu --resource-id sbdji34b --http-method OPTIONS --status-code 200 --region ap-south-1 --response-models '{"application/json":"Empty"}' --response-parameters '{"method.response.header.Access-Control-Allow-Headers":true,"method.response.header.Access-Control-Allow-Origin":true,"method.response.header.Access-Control-Allow-Methods":true}'
+
+aws apigateway put-integration-response --rest-api-id sdfuy44rbewu --resource-id sbdji34b --http-method OPTIONS --status-code 200 --response-parameters '{"method.response.header.Access-Control-Allow-Headers":"'"'"'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,jtoken,jToken'"'"'","method.response.header.Access-Control-Allow-Origin":"'"'"'*'"'"'","method.response.header.Access-Control-Allow-Methods":"'"'"'POST'"'"'"}' --region ap-south-1
+
+
+aws apigateway create-deployment --region ap-south-1 --rest-api-id sdfuy44rbewu --stage-name alpha

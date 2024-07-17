@@ -1,0 +1,24 @@
+{
+  "Comment": "policy for app-prod api",
+  "Name": "origin-policy-for-api-app-prod-origin",
+  "HeadersConfig": {
+    "HeaderBehavior": "whitelist",
+    "Headers": {
+      "Quantity": 6,
+      "Items": [
+        "Access-Control-Request-Method",
+        "Access-Control-Request-Headers",
+        "jtoken",
+        "jToken",
+        "Content-Type",
+        "Origin"
+      ]
+    }
+  },
+  "CookiesConfig": {
+    "CookieBehavior": "none"
+  },
+  "QueryStringsConfig": {
+    "QueryStringBehavior": "none"
+  }
+}

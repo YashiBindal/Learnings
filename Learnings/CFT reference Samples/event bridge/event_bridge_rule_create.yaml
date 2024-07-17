@@ -1,0 +1,54 @@
+##enable s3 event bridge notification property using cli command : aws s3api put-bucket-notification-configuration --bucket DOC-EXAMPLE-BUCKET1 --notification-configuration '{ "EventBridgeConfiguration": {} }'
+
+AWSTemplateFormatVersion: "2010-09-09"
+Description: AWS event bridge lambda trigger rule
+Parameters:
+  LambdaArn:
+    Type: String
+    Default: arn:aws:lambda:ap-south-1:567987989000:function:lambda_function_name
+  LambdaName:
+    Type: String
+    Default: lambda_function_name
+
+EventRule:
+  Type: AWS::Events::Rule
+  Properties:
+    Description: "EventRule for multiple trigger on sap file"
+    EventPattern:
+      source:
+        - "S3"
+      detail-type:
+        - "Object Created"
+      detail:
+        bucket: name:LambdaArn
+          - s3-bucket-name
+        object:
+          key:
+            - prefix: s3-prefix/file-path/
+    State: "ENABLED"
+    Targets:
+      - id: upload_event
+        Arn: !Ref LambdaArn
+    Name: upload_event
+
+PermissionForEventsToInvokeLambda:
+  Type: AWS::Lambda::Permission
+  Properties:
+    FunctionName: !Ref LambdaName
+    Action: "lambda:InvokeFunction"
+    Principal: "events.amazonaws.com"
+    SourceArn:
+      Fn::GetAtt:
+        - "EventRule"
+        - "Arn"
+
+
+#Command to deploy stack :
+#aws cloudformation create-stack --stack-name s3-event-bridge-rule --template-body file://sampletemplate.json --parameters ParameterKey=KeyPairName,ParameterValue=TestKey ParameterKey=SubnetIDs,ParameterValue=SubnetID1\\,SubnetID2
+
+aws cloudformation create-stack --stack-name s3-event-bridge-rule --tags Key=Project,Value=ABC 'Key=Owner,Value=XYZ' Key=Environment,Value=Production  Key=Name,Value=s3-event-bridge-rule --template-body file://eventBridgeRule.yml --capabilities CAPABILITY_NAMED_IAM
+
+
+aws events put-rule --name "file_upload_event_test" --event-pattern "{\"source\": [\"aws.s3\"],\"detail-type\": [\"Object Created\"],\"detail\": {\"bucket\": {\"name\": [\"data-source\"]},\"object\": {\"key\": [{\"prefix\": \"Auto_upload/file_path/\"}]}}}"  --role-arn "arn:aws:iam::123456789012:role/MyRoleForThisRule"
+
+aws events put-rule --name "EC2InstanceStateChangeStopOrTerminate" --event-pattern "{\"source\":[\"aws.ec2\"],\"detail-type\":[\"EC2 Instance State-change Notification\"],\"detail\":{\"state\":[\"stopped\",\"terminated\"]}}" --role-arn "arn:aws:iam::123456789012:role/MyRoleForThisRule"

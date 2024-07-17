@@ -1,0 +1,99 @@
+{
+  "EventBridgeConfiguration": {},
+  "LambdaFunctionConfigurations": [
+    {
+      "Id": "upload_s3_trigger_1",
+      "LambdaFunctionArn": "arn:aws:lambda:ap-south-1:682433509696:function:function_1",
+      "Events": ["s3:ObjectCreated:*"],
+      "Filter": {
+        "Key": {
+          "FilterRules": [
+            {
+              "Name": "Prefix",
+              "Value": "Path_1/"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "Id": "upload_s3_trigger_2",
+      "LambdaFunctionArn": "arn:aws:lambda:ap-south-1:682433509696:function:function_2",
+      "Events": ["s3:ObjectCreated:*"],
+      "Filter": {
+        "Key": {
+          "FilterRules": [
+            {
+              "Name": "Prefix",
+              "Value": "Path_2/"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "Id": "trigger_lambda_s3_trigger",
+      "LambdaFunctionArn": "arn:aws:lambda:ap-south-1:682433509696:function:function_3",
+      "Events": ["s3:ObjectCreated:*"],
+      "Filter": {
+        "Key": {
+          "FilterRules": [
+            {
+              "Name": "Prefix",
+              "Value": "Path_3/"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "Id": "reports_successful_s3_trigger",
+      "LambdaFunctionArn": "arn:aws:lambda:ap-south-1:682433509696:function:function_4",
+      "Events": ["s3:ObjectCreated:*"],
+      "Filter": {
+        "Key": {
+          "FilterRules": [
+            {
+              "Name": "Prefix",
+              "Value": "path_4"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "Id": "upload s3 Trigger 4",
+      "LambdaFunctionArn": "arn:aws:lambda:ap-south-1:682433509696:function:function_5",
+      "Events": ["s3:ObjectCreated:*"],
+      "Filter": {
+        "Key": {
+          "FilterRules": [
+            {
+              "Name": "Prefix",
+              "Value": "Path_5/"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "Id": "s3 trigger 6",
+      "LambdaFunctionArn": "arn:aws:lambda:ap-south-1:682433509696:function:function_6",
+      "Events": ["s3:ObjectCreated:*"],
+      "Filter": {
+        "Key": {
+          "FilterRules": [
+            {
+              "Name": "Prefix",
+              "Value": "Path_6/"
+            },
+            {
+              "Name": "Suffix",
+              "Value": ".csv"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
